@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
-using System.Drawing;
 
-public class LahmMapEditor : MonoBehaviour
+/// <summary>
+/// 负责地图的DrawGizmos显示
+/// 保存地图相关数据
+/// </summary>
+public class MapDrawer : MonoBehaviour
 {
     public const int ROW_MAX = 8;
     public const int COLUMN_MAX = 13;
@@ -17,12 +20,16 @@ public class LahmMapEditor : MonoBehaviour
     public const float HEIGHT = GRID_HEIGHT * ROW_MAX;
 
     public bool DrawAlways = true;
-    public GameObject Go;
 
     private float _left;
     private float _right;
     private float _top;
     private float _bottom;
+
+    private void Awake()
+    {
+        InitMapData();
+    }
 
     private void OnDrawGizmos()
     {
@@ -31,44 +38,6 @@ public class LahmMapEditor : MonoBehaviour
             return;
         }
         Draw();
-        Vector3 mouseWorldPosition = GetMouseWorldPosition();
-        if(ValidClick(mouseWorldPosition))
-        {
-            Debug.LogError(GetPoint(mouseWorldPosition));
-        }
-        else
-        {
-            Debug.LogError("Not Contain");
-        }
-    }
-
-    private void InitMapData()
-    {
-        Vector3 selfPosition = transform.position;
-        _left = selfPosition.x - WIDTH / 2;
-        _right = selfPosition.x + WIDTH / 2;
-        _top = selfPosition.y + HEIGHT / 2;
-        _bottom = selfPosition.y - HEIGHT / 2;
-    }
-
-    private Vector3 GetMouseWorldPosition()
-    {
-        Plane plane = new Plane(transform.TransformDirection(Vector3.forward), transform.position);
-        Ray worldRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-
-        Vector3 hitPosition = new Vector3();
-        float distance;
-        if(plane.Raycast(worldRay, out distance))
-        {
-            hitPosition = worldRay.GetPoint(distance);
-        }
-        return hitPosition;
-    }
-
-    private bool ValidClick(Vector3 hitPosition)
-    {
-        return _left <= hitPosition.x && hitPosition.x < _right &&
-            _bottom < hitPosition.y && hitPosition.y <= _top;
     }
 
     private void OnDrawGizmosSelected()
@@ -83,7 +52,6 @@ public class LahmMapEditor : MonoBehaviour
 
     private void Draw()
     {
-        InitMapData();
         DrawGrid();
     }
 
@@ -117,5 +85,20 @@ public class LahmMapEditor : MonoBehaviour
         float x = (float)((point.x + 0.5) * GRID_WIDTH);
         float y = (float)((point.y + 0.5) * GRID_HEIGHT);
         return new Vector2(x, y);
+    }
+
+    private void InitMapData()
+    {
+        Vector3 selfPosition = transform.position;
+        _left = selfPosition.x - WIDTH / 2;
+        _right = selfPosition.x + WIDTH / 2;
+        _top = selfPosition.y + HEIGHT / 2;
+        _bottom = selfPosition.y - HEIGHT / 2;
+    }
+
+    public bool ValidClick(Vector3 hitPosition)
+    {
+        return _left <= hitPosition.x && hitPosition.x < _right &&
+            _bottom < hitPosition.y && hitPosition.y <= _top;
     }
 }

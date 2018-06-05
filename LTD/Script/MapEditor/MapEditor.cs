@@ -1,120 +1,79 @@
-﻿using LitJson;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Text;
+using UnityEditor;
 using UnityEngine;
 
-public class MapEditor {
+[CustomEditor(typeof(MapDrawer))]
+public class MapEditor : Editor
+{
+    public GameObject Go;
 
-    private static MapEditor _instance;
-    public static MapEditor Instance
+    private MapDrawer _mapDrawer;
+    private Dictionary<Vector2, MapGrid> _mapGridDict = new Dictionary<Vector2, MapGrid>();
+
+    private void Awake()
     {
-        get
-        {
-            if(_instance == null)
-            {
-                _instance = new MapEditor();
-            }
-            return _instance;
-        }
+        _mapDrawer = this.target as MapDrawer;
     }
 
-    private MapEditor() { }
+    
 
-    private GameObject _map;
-    private MapGrid[] _mapGridArray;
-    private int _row;
-    private int _column;
-
-    public void Init()
+    public void OnSceneGUI()
     {
-        _map = GameObject.Find("Canvas/Map");
-        RectTransform rect = _map.GetComponent<RectTransform>();
-        Vector2 size = rect.sizeDelta;
-        _row = (int)Math.Floor(size.y / MapDefine.GRID_HEIGHT);
-        _column = (int)Math.Floor(size.x / MapDefine.GRID_WIDTH);
-        _mapGridArray = new MapGrid[_row * _column];
-        for(int i = 0; i < _row; i++)
+        if(!_mapDrawer)
         {
-            for(int j = 0; j < _column; j++)
+            return;
+        }
+
+        Vector3 mouseWorldPosition = GetMouseWorldPosition();
+        if(_mapDrawer.ValidClick(mouseWorldPosition))
+        {
+            Event currentEvent = Event.current;
+            Debug.LogError(currentEvent.type);
+            if (currentEvent.type == EventType.MouseDown
+                || currentEvent.type == EventType.MouseDrag)
             {
-                GameObject go = new GameObject("Grid" + GetIndex(i, j, _column).ToString());
-                MapGrid mapGrid = go.AddComponent<MapGrid>();
-                RectTransform mapRect = go.GetComponent<RectTransform>();
-                TransformUtility.SetParent(mapRect, rect);
-                mapRect.anchoredPosition3D = new Vector3(j * MapDefine.GRID_WIDTH, -i * MapDefine.GRID_HEIGHT, 0);
-                _mapGridArray[GetIndex(i, j, _column)] = mapGrid;
+
+                Debug.LogError(currentEvent.button);
+                if (currentEvent.button == 0)
+                {
+                    CreateMapGrid(mouseWorldPosition);
+                    currentEvent.Use();
+                }
+
+                if (currentEvent.button == 1)
+                {
+                    currentEvent.Use();
+                }
             }
         }
-	}
-
-    public int GetIndex(int rowIndex, int columnIndex, int column)
-    {
-        return rowIndex * column + columnIndex;
+        else
+        {
+        }
+        
     }
 
-    public class MapRecord
+    private void CreateMapGrid(Vector3 mouseWorldPosition)
     {
-        public int[] Data;
-        public int Row;
-        public int Column;
-
-        public MapRecord() { }
-
-        public MapRecord(int row, int column)
-        {
-            Row = row;
-            Column = column;
-            Data = new int[row * column];
-        }
-
-        public void SetSelect(int rowIndex, int columnIndex, int value)
-        {
-            Data[rowIndex * Column + columnIndex] = value;
-        }
-
-        public int GetSelect(int rowIndex, int columnIndex)
-        {
-            return Data[rowIndex * Column + columnIndex];
-        }
+        Vector2 point = GetPoint(mouseWorldPosition);
+        GameObject go = GameObject.Instantiate(Go);
+        go.transform.position = Point2Position(point);
     }
 
-    public void Save()
+
+    private Vector3 GetMouseWorldPosition()
     {
-        MapRecord record = new MapRecord(_row, _column);
-        for (int i = 0; i < _row; i++)
-        {
-            for (int j = 0; j < _column; j++)
-            {
-                MapGrid mapGrid = _mapGridArray[GetIndex(i, j, _column)];
-                record.SetSelect(i, j, mapGrid.Select ? MapDefine.SELECT : MapDefine.UNSELECT);
-            }
-        }
+        Plane plane = new Plane(transform.TransformDirection(Vector3.forward), transform.position);
+        Ray worldRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
-        using (StreamWriter sw = new StreamWriter(MapDefine.MAP_DATA_PATH))
+        Vector3 hitPosition = new Vector3();
+        float distance;
+        if (plane.Raycast(worldRay, out distance))
         {
-            sw.Write(JsonMapper.ToJson(record));
+            hitPosition = worldRay.GetPoint(distance);
         }
-    }
-
-    public void Load()
-    {
-        string str;
-        using (StreamReader sr = new StreamReader(MapDefine.MAP_DATA_PATH))
-        {
-            str = sr.ReadToEnd();
-        }
-
-        MapRecord mapRecord = JsonMapper.ToObject<MapRecord>(str);
-        for(int i = 0; i < mapRecord.Row; i++)
-        {
-            for(int j = 0; j < mapRecord.Column; j++)
-            {
-                MapGrid mapGrid = _mapGridArray[GetIndex(i, j, mapRecord.Column)];
-                mapGrid.Select = mapRecord.GetSelect(i, j) == MapDefine.SELECT;
-            }
-        }
+        return hitPosition;
     }
 }
