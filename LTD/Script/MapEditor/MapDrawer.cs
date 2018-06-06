@@ -21,11 +21,13 @@ public class MapDrawer : MonoBehaviour
 
     public bool DrawAlways = true;
     public GameObject Go;
+    public int count = 0;
 
     private float _left;
     private float _right;
     private float _top;
     private float _bottom;
+
 
 
     private void Start()
@@ -38,6 +40,7 @@ public class MapDrawer : MonoBehaviour
         {
             return;
         }
+        
         InitMapData();
         Draw();
     }
@@ -84,8 +87,8 @@ public class MapDrawer : MonoBehaviour
 
     public Vector2 Point2Position(Vector2 point)
     {
-        float x = (float)((point.x + 0.5) * GRID_WIDTH);
-        float y = (float)((point.y + 0.5) * GRID_HEIGHT);
+        float x = _left + (float)((point.y + 0.5) * GRID_WIDTH);
+        float y = _top - (float)((point.x + 0.5) * GRID_HEIGHT);
         return new Vector2(x, y);
     }
 

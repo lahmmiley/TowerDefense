@@ -15,43 +15,68 @@ public class MapEditor : Editor
     {
         _mapDrawer = this.target as MapDrawer;
     }
-    
+
+    private void OnEnable()
+    {
+        
+    }
+
 
     public void OnSceneGUI()
     {
-        if(!_mapDrawer)
-        {
-            return;
-        }
+        //if(!_mapDrawer)
+        //{
+        //    return;
+        //}
 
-        Vector3 mouseWorldPosition = GetMouseWorldPosition();
-        if(_mapDrawer.ValidClick(mouseWorldPosition))
+        SceneView.RepaintAll();
+        if (Event.current.type == EventType.MouseDown
+            && Event.current.button == 0)
         {
-            Event currentEvent = Event.current;
-            if (currentEvent.type == EventType.MouseDown
-                || currentEvent.type == EventType.MouseDrag)
+            RaycastHit hit;
+            Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
+            UnityEngine.Debug.DrawRay(ray.origin, ray.direction, Color.blue, 10);
+            if (Physics.Raycast(ray, out hit))
             {
-
-                Debug.LogError(currentEvent.button);
-                if (currentEvent.button == 0)
-                {
-                    CreateMapGrid(mouseWorldPosition);
-                    currentEvent.Use();
-                }
-
-                if (currentEvent.button == 1)
-                {
-                    currentEvent.Use();
-                }
+                UnityEngine.Debug.Log(hit.collider.gameObject);
             }
+
+            UnityEngine.Debug.Log("Left-Mouse Down");
+            Event.current.Use();
         }
+
+        //Vector3 mouseWorldPosition = GetMouseWorldPosition();
+        //if(_mapDrawer.ValidClick(mouseWorldPosition))
+        //{
+        //    Event currentEvent = Event.current;
+        //    Debug.LogError(currentEvent.type);
+        //    if (currentEvent.type == EventType.MouseDown
+        //        || currentEvent.type == EventType.MouseDrag)
+        //    {
+        //        if (currentEvent.button == 0)
+        //        {
+        //            CreateMapGrid(mouseWorldPosition);
+        //            currentEvent.Use();
+        //        }
+
+        //        if (currentEvent.button == 1)
+        //        {
+        //            currentEvent.Use();
+        //        }
+        //    }
+        //}
     }
 
     private void CreateMapGrid(Vector3 mouseWorldPosition)
     {
         Vector2 point = _mapDrawer.GetPoint(mouseWorldPosition);
-        GameObject go = GameObject.Instantiate(_mapDrawer.Go);
-        go.transform.position = _mapDrawer.Point2Position(point);
+        if(!_mapGridDict.ContainsKey(point))
+        {
+            GameObject go = GameObject.Instantiate(_mapDrawer.Go);
+            MapGrid mapGrid = go.AddComponent<MapGrid>();
+            go.transform.position = _mapDrawer.Point2Position(point);
+            _mapGridDict.Add(point, mapGrid);
+        }
     }
 
 

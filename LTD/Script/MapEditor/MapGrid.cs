@@ -27,6 +27,7 @@ public class MapGrid : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        Debug.LogError("OnPointerDown");
         if(Input.GetKey(KeyCode.Mouse0))
         {
             Select = true;
@@ -39,6 +40,7 @@ public class MapGrid : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        Debug.LogError("OnPointerEnter");
         if(Input.GetKey(KeyCode.Mouse0))
         {
             Select = true;
