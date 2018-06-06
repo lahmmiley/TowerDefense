@@ -30,24 +30,24 @@ public class MapEditorBackup {
 
     public void Init()
     {
-        _map = GameObject.Find("Canvas/Map");
-        RectTransform rect = _map.GetComponent<RectTransform>();
-        Vector2 size = rect.sizeDelta;
-        _row = (int)Math.Floor(size.y / MapDefine.GRID_HEIGHT);
-        _column = (int)Math.Floor(size.x / MapDefine.GRID_WIDTH);
-        _mapGridArray = new MapGrid[_row * _column];
-        for(int i = 0; i < _row; i++)
-        {
-            for(int j = 0; j < _column; j++)
-            {
-                GameObject go = new GameObject("Grid" + GetIndex(i, j, _column).ToString());
-                MapGrid mapGrid = go.AddComponent<MapGrid>();
-                RectTransform mapRect = go.GetComponent<RectTransform>();
-                TransformUtility.SetParent(mapRect, rect);
-                mapRect.anchoredPosition3D = new Vector3(j * MapDefine.GRID_WIDTH, -i * MapDefine.GRID_HEIGHT, 0);
-                _mapGridArray[GetIndex(i, j, _column)] = mapGrid;
-            }
-        }
+        //_map = GameObject.Find("Canvas/Map");
+        //RectTransform rect = _map.GetComponent<RectTransform>();
+        //Vector2 size = rect.sizeDelta;
+        //_row = (int)Math.Floor(size.y / MapDefine.GRID_HEIGHT);
+        //_column = (int)Math.Floor(size.x / MapDefine.GRID_WIDTH);
+        //_mapGridArray = new MapGrid[_row * _column];
+        //for(int i = 0; i < _row; i++)
+        //{
+        //    for(int j = 0; j < _column; j++)
+        //    {
+        //        GameObject go = new GameObject("Grid" + GetIndex(i, j, _column).ToString());
+        //        MapGrid mapGrid = go.AddComponent<MapGrid>();
+        //        RectTransform mapRect = go.GetComponent<RectTransform>();
+        //        TransformUtility.SetParent(mapRect, rect);
+        //        mapRect.anchoredPosition3D = new Vector3(j * MapDefine.GRID_WIDTH, -i * MapDefine.GRID_HEIGHT, 0);
+        //        _mapGridArray[GetIndex(i, j, _column)] = mapGrid;
+        //    }
+        //}
 	}
 
     public int GetIndex(int rowIndex, int columnIndex, int column)

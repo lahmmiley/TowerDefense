@@ -5,7 +5,6 @@ using System.Text;
 
 public class MapDefine
 {
-
     public const int UNSELECT = 0;
     public const int SELECT = 1;
 

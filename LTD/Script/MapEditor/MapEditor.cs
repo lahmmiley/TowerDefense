@@ -8,8 +8,6 @@ using UnityEngine;
 [CustomEditor(typeof(MapDrawer))]
 public class MapEditor : Editor
 {
-    public GameObject Go;
-
     private MapDrawer _mapDrawer;
     private Dictionary<Vector2, MapGrid> _mapGridDict = new Dictionary<Vector2, MapGrid>();
 
@@ -17,7 +15,6 @@ public class MapEditor : Editor
     {
         _mapDrawer = this.target as MapDrawer;
     }
-
     
 
     public void OnSceneGUI()
@@ -31,7 +28,6 @@ public class MapEditor : Editor
         if(_mapDrawer.ValidClick(mouseWorldPosition))
         {
             Event currentEvent = Event.current;
-            Debug.LogError(currentEvent.type);
             if (currentEvent.type == EventType.MouseDown
                 || currentEvent.type == EventType.MouseDrag)
             {
@@ -49,23 +45,19 @@ public class MapEditor : Editor
                 }
             }
         }
-        else
-        {
-        }
-        
     }
 
     private void CreateMapGrid(Vector3 mouseWorldPosition)
     {
-        Vector2 point = GetPoint(mouseWorldPosition);
-        GameObject go = GameObject.Instantiate(Go);
-        go.transform.position = Point2Position(point);
+        Vector2 point = _mapDrawer.GetPoint(mouseWorldPosition);
+        GameObject go = GameObject.Instantiate(_mapDrawer.Go);
+        go.transform.position = _mapDrawer.Point2Position(point);
     }
 
 
     private Vector3 GetMouseWorldPosition()
     {
-        Plane plane = new Plane(transform.TransformDirection(Vector3.forward), transform.position);
+        Plane plane = new Plane(_mapDrawer.transform.TransformDirection(Vector3.forward), _mapDrawer.transform.position);
         Ray worldRay = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
 
         Vector3 hitPosition = new Vector3();

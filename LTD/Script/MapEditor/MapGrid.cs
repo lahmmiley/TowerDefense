@@ -55,7 +55,7 @@ public class MapGrid : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
         _image = gameObject.AddComponent<Image>();
         _image.color = new Color(1, 0, 0, 0);
         _select = false;
-        _rect.sizeDelta = new Vector2(MapDefine.GRID_WIDTH, MapDefine.GRID_HEIGHT);
+        //_rect.sizeDelta = new Vector2(MapDefine.GRID_WIDTH, MapDefine.GRID_HEIGHT);
     }
 
     private void Refresh()

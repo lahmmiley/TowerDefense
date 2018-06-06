@@ -20,15 +20,16 @@ public class MapDrawer : MonoBehaviour
     public const float HEIGHT = GRID_HEIGHT * ROW_MAX;
 
     public bool DrawAlways = true;
+    public GameObject Go;
 
     private float _left;
     private float _right;
     private float _top;
     private float _bottom;
 
-    private void Awake()
+
+    private void Start()
     {
-        InitMapData();
     }
 
     private void OnDrawGizmos()
@@ -37,6 +38,7 @@ public class MapDrawer : MonoBehaviour
         {
             return;
         }
+        InitMapData();
         Draw();
     }
 
@@ -73,14 +75,14 @@ public class MapDrawer : MonoBehaviour
         }
     }
 
-    private Vector2 GetPoint(Vector3 position)
+    public Vector2 GetPoint(Vector3 position)
     {
         int column = Mathf.FloorToInt((position.x - _left) / GRID_WIDTH);
         int row = Mathf.FloorToInt((_top - position.y) / GRID_HEIGHT);
         return new Vector2(row, column);
     }
 
-    private Vector2 Point2Position(Vector2 point)
+    public Vector2 Point2Position(Vector2 point)
     {
         float x = (float)((point.x + 0.5) * GRID_WIDTH);
         float y = (float)((point.y + 0.5) * GRID_HEIGHT);
