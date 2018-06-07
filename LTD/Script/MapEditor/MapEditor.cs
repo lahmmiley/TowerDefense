@@ -18,6 +18,7 @@ public class MapEditor : Editor
 
     private void OnEnable()
     {
+        Tools.current = Tool.View;
         
     }
 
@@ -29,42 +30,26 @@ public class MapEditor : Editor
         //    return;
         //}
 
-        SceneView.RepaintAll();
-        if (Event.current.type == EventType.MouseDown
-            && Event.current.button == 0)
+        Vector3 mouseWorldPosition = GetMouseWorldPosition();
+        if(_mapDrawer.ValidClick(mouseWorldPosition))
         {
-            RaycastHit hit;
-            Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
-            UnityEngine.Debug.DrawRay(ray.origin, ray.direction, Color.blue, 10);
-            if (Physics.Raycast(ray, out hit))
+            Event currentEvent = Event.current;
+            Debug.LogError(currentEvent.type);
+            if (currentEvent.type == EventType.MouseDown
+                || currentEvent.type == EventType.MouseDrag)
             {
-                UnityEngine.Debug.Log(hit.collider.gameObject);
+                if (currentEvent.button == 0)
+                {
+                    CreateMapGrid(mouseWorldPosition);
+                    currentEvent.Use();
+                }
+
+                if (currentEvent.button == 1)
+                {
+                    currentEvent.Use();
+                }
             }
-
-            UnityEngine.Debug.Log("Left-Mouse Down");
-            Event.current.Use();
         }
-
-        //Vector3 mouseWorldPosition = GetMouseWorldPosition();
-        //if(_mapDrawer.ValidClick(mouseWorldPosition))
-        //{
-        //    Event currentEvent = Event.current;
-        //    Debug.LogError(currentEvent.type);
-        //    if (currentEvent.type == EventType.MouseDown
-        //        || currentEvent.type == EventType.MouseDrag)
-        //    {
-        //        if (currentEvent.button == 0)
-        //        {
-        //            CreateMapGrid(mouseWorldPosition);
-        //            currentEvent.Use();
-        //        }
-
-        //        if (currentEvent.button == 1)
-        //        {
-        //            currentEvent.Use();
-        //        }
-        //    }
-        //}
     }
 
     private void CreateMapGrid(Vector3 mouseWorldPosition)
